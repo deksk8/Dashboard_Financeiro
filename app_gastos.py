@@ -69,17 +69,22 @@ with tab1:
         # --- NOVO CÓDIGO FIM ---
 
         st.subheader('Visão Unificada de Gastos')
+
+        gastos_por_tag_geral = df_combined.groupby('Tags')['Valor'].sum().reset_index()
+        gastos_por_tag_geral['Label'] = gastos_por_tag_geral['Tags'] + ' - R$ ' + gastos_por_tag_geral['Valor'].map('{:,.2f}'.format)
         
         # Gráfico de pizza combinado
-        gastos_por_tag_geral = df_combined.groupby('Tags')['Valor'].sum().reset_index()
         fig_pie_geral = px.pie(
             gastos_por_tag_geral,
             values='Valor',
-            names='Tags',
+            names='Label',
             title='Proporção Total de Gastos por Categoria (Todos os Cartões)',
             color='Tags'
         )
         st.plotly_chart(fig_pie_geral)
+
+        fig_bar = px.bar(gastos_por_tag_geral, x='Valor', y='Label', orientation='h', title='Soma Total de Gastos por Categoria - PicPay', labels={'Valor': 'Valor (R$)', 'Tags': 'Categoria'}, color='Tags')
+        st.plotly_chart(fig_bar)
         
         st.subheader('Tabela Geral de Compras')
         st.dataframe(df_combined)
@@ -113,12 +118,13 @@ with tab2:
         st.subheader('Análise de Gastos')
         gastos_por_tag = df_compras.groupby('Tags')['Valor'].sum().reset_index()
 
-        fig_pie = px.pie(gastos_por_tag, values='Valor', names='Tags', title='Proporção de Gastos por Categoria - PicPay', color='Tags')
+        # --- CÓDIGO ALTERADO PARA ADICIONAR VALORES NA LEGENDA ---
+        gastos_por_tag['Label'] = gastos_por_tag['Tags'] + ' - R$ ' + gastos_por_tag['Valor'].map('{:,.2f}'.format)
+        fig_pie = px.pie(gastos_por_tag, values='Valor', names='Label', title='Proporção de Gastos por Categoria - PicPay', color='Tags')
         st.plotly_chart(fig_pie)
         
-        fig_bar = px.bar(gastos_por_tag, x='Valor', y='Tags', orientation='h', title='Soma Total de Gastos por Categoria - PicPay', labels={'Valor': 'Valor (R$)', 'Tags': 'Categoria'}, color='Tags')
+        fig_bar = px.bar(gastos_por_tag, x='Valor', y='Label', orientation='h', title='Soma Total de Gastos por Categoria - PicPay', labels={'Valor': 'Valor (R$)', 'Tags': 'Categoria'}, color='Tags')
         st.plotly_chart(fig_bar)
-
 
 with tab3:
     st.header('Análise da Fatura - Inter')
@@ -146,8 +152,9 @@ with tab3:
         st.subheader('Análise de Gastos')
         gastos_por_tag = df_compras.groupby('Tags')['Valor'].sum().reset_index()
         
-        fig_pie = px.pie(gastos_por_tag, values='Valor', names='Tags', title='Proporção de Gastos por Categoria - Inter')
+        gastos_por_tag['Label'] = gastos_por_tag['Tags'] + ' - R$ ' + gastos_por_tag['Valor'].map('{:,.2f}'.format)
+        fig_pie = px.pie(gastos_por_tag, values='Valor', names='Label', title='Proporção de Gastos por Categoria - Inter')
         st.plotly_chart(fig_pie)
 
-        fig_bar = px.bar(gastos_por_tag, x='Valor', y='Tags', orientation='h', title='Soma Total de Gastos por Categoria - Inter', labels={'Valor': 'Valor (R$)', 'Tags': 'Categoria'}, color='Tags')
+        fig_bar = px.bar(gastos_por_tag, x='Valor', y='Label', orientation='h', title='Soma Total de Gastos por Categoria - Inter', labels={'Valor': 'Valor (R$)', 'Tags': 'Categoria'}, color='Tags')
         st.plotly_chart(fig_bar)
