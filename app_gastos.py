@@ -46,13 +46,18 @@ with tab1:
     if st.session_state.df_picpay is not None and st.session_state.df_inter is not None:
         # Concatena os DataFrames
         df_combined = pd.concat([st.session_state.df_picpay, st.session_state.df_inter], ignore_index=True)
+
+        renda = st.number_input("Valor dos proventos deste mês (R$)", min_value=0.0, value=5000.0, step=100.0)
         
         # --- NOVO CÓDIGO INÍCIO ---
         # 1. Total de todas as faturas
         total_combined = df_combined['Valor'].sum()
-        st.subheader('Soma Total de Todas as Faturas')
+        st.subheader('Movimentação Total dos Cartões')
+        
         st.metric("Total de Compras", f'R$ {total_combined:,.2f}')
-
+        st.metric("Renda Mensal", f'R$ {renda:,.2f}')
+        saldo = renda - total_combined
+        st.metric("Saldo", f'R$ {saldo:,.2f}', delta=f'R$ {renda - saldo:,.2f}', delta_color="normal")
         # 2. Ranking das 10 maiores compras
         st.subheader('Ranking das 10 Maiores Compras')
         df_top10 = df_combined.sort_values(by='Valor', ascending=False).head(10)
